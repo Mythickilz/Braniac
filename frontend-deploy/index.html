@@ -27,14 +27,14 @@
 <meta name="theme-color" content="#0F0F0F">
 <!-- HTML Meta Tags -->
 <title>BRANIAC — High Energy. Zero Boredom. All Brain.</title>
-<meta name="description" content="Learning that hits different. Outsmart everyone with BRANIAC — the high-energy learning platform built for the next generation.">
+<meta name="description" content="Outsmart everyone with BRANIAC — the high-energy learning platform built for the next generation.">
 
 <!-- Facebook Meta Tags -->
 <!-- Open Graph Meta Tags -->
 <meta property="og:url" content="https://braniaclearning.netlify.app/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="BRANIAC — High Energy. Zero Boredom. All Brain.">
-<meta property="og:description" content="Learning that hits different. Outsmart everyone with BRANIAC — the high-energy learning platform built for the next generation.">
+<meta property="og:description" content="Outsmart everyone with BRANIAC — the high-energy learning platform built for the next generation.">
 <meta property="og:image" content="https://opengraph.b-cdn.net/production/images/9fc4a38d-b978-4401-b7e2-fd0353a2f6af.png?token=yxL4MujZkVD89ubL7znMEzn5w09rehUobMlxerPRwjo&height=630&width=1200&expires=33298606741">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -44,7 +44,7 @@
 <meta property="twitter:domain" content="braniaclearning.netlify.app">
 <meta property="twitter:url" content="https://braniaclearning.netlify.app/">
 <meta name="twitter:title" content="BRANIAC — High Energy. Zero Boredom. All Brain.">
-<meta name="twitter:description" content="Learning that hits different. Outsmart everyone with BRANIAC — the high-energy learning platform built for the next generation.">
+<meta name="twitter:description" content="Outsmart everyone with BRANIAC — the high-energy learning platform built for the next generation.">
 <meta name="twitter:image" content="https://opengraph.b-cdn.net/production/images/9fc4a38d-b978-4401-b7e2-fd0353a2f6af.png?token=yxL4MujZkVD89ubL7znMEzn5w09rehUobMlxerPRwjo&height=630&width=1200&expires=33298606741">
 
 <!-- Preload social hover icons for faster transitions -->
@@ -65,7 +65,7 @@
       <a href="#achievements" class="nav-item">ACHIEVEMENTS</a>
       <a href="#scores" class="nav-item">SCORES</a>
     </div>
-    <button class="sign-in-btn">SIGN IN</button>
+    <button class="sign-in-btn" id="openSignIn">SIGN IN</button>
   </nav>
 
   <!-- Hero Section -->
@@ -165,6 +165,50 @@
 
   <div class="footer-bottom">© 2025 BRANIAC. Because smart doesn’t have to be boring.</div>
 
-  <script src="script.js"></script>
+  <div class="auth-overlay" id="authOverlay">
+  <div class="auth-container">
+
+    <!-- Close Button -->
+    <button class="close-modal" id="closeModal">&times;</button>
+
+    <!-- Logo -->
+    <div class="auth-logo-container">
+      <img src="assets/BRANIAC logos/braniac-logo(2).svg" alt="Braniac Logo" class="auth-logo">
+    </div>
+
+    <!-- Sign In Panel -->
+    <div class="auth-panel" id="signInPanel">
+      <h2 class="auth-title">SIGN IN</h2>
+      <p class="auth-subtitle">Access your scores and achievements</p>
+      <form class="auth-form">
+        <input type="text" placeholder="Username" required>
+        <input type="password" placeholder="Password" required>
+        <button type="submit" class="auth-btn">SIGN IN</button>
+      </form>
+      <p class="switch-text">
+        Don't have an account? <a href="#" id="switchToRegister">Register</a>
+      </p>
+      <button class="guest-btn">Continue as Guest</button>
+    </div>
+
+    <!-- Register Panel -->
+    <div class="auth-panel hidden" id="registerPanel">
+      <h2 class="auth-title">REGISTER</h2>
+      <p class="auth-subtitle">Create your account to track your progress</p>
+      <form class="auth-form" id="registerForm">
+        <input type="text" placeholder="Username" required>
+        <input type="password" placeholder="Password" required>
+        <input type="password" placeholder="Confirm Password" required>
+        <button class="auth-btn" type="submit" id="registerBtn">REGISTER</button>
+      </form>
+      <p class="switch-text">
+        Already have an account? <a href="#" id="switchToSignIn">Sign In</a>
+      </p>
+      <button class="guest-btn">Continue as Guest</button>
+    </div>
+
+  </div>
+</div>
+  <script src="script.js" defer></script>
 </body>
 </html>
