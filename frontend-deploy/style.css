@@ -774,7 +774,12 @@ h1, h2, h3, h4, h5, h6 {
 .auth-panel { display: flex; flex-direction: column; gap: 0.65rem; }
 .auth-panel.hidden { display: none; }
 
-.auth-form { display: flex; flex-direction: column; gap: 0.65rem; }
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
 .auth-form input {
   padding: 0.65rem 0.75rem;
   border-radius: 12px;
@@ -784,6 +789,41 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'Cascadia Code', monospace;
   font-size: 0.9rem;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.auth-form input:focus {
+  border-color: #FE77AA;
+  outline: none;
+}
+
+/* Password toggle wrapper */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  flex: 1;
+  padding-right: 2.5rem; /* space for toggle */
+}
+
+.toggle-password {
+  position: absolute;
+  right: 0.7rem;
+  top: 50%;              /* move to middle of wrapper */
+  transform: translateY(-50%); /* adjust for perfect centering */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center; /* ensures SVG is centered inside the button */
+}
+
+.toggle-password img {
+  width: 1rem;
+  height: 1rem;
 }
 .auth-form input:focus { border-color: #FE77AA; outline: none; }
 

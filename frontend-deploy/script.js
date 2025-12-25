@@ -87,6 +87,8 @@ const registerPanel = document.getElementById('registerPanel');
 const authTitle = document.getElementById('authTitle');
 const authDesc = document.getElementById('authDesc');
 
+const registerForm = document.getElementById('registerForm');
+
 // Open modal
 signInBtn.addEventListener('click', (e) => {
   e.preventDefault();
@@ -119,15 +121,32 @@ switchToSignIn.addEventListener('click', (e) => {
   authDesc.innerHTML = "Access your <strong>Scores</strong> and <strong>Achievements</strong>.";
 });
 
-const registerForm = document.getElementById('registerForm');
-
 registerForm.addEventListener('submit', (e) => {
   e.preventDefault();
-
   if (!registerForm.checkValidity()) {
     registerForm.reportValidity();
     return;
   }
-
   window.location.href = 'onboarding.html'; // update path if needed
+});
+
+const toggleButtons = document.querySelectorAll('.toggle-password');
+
+toggleButtons.forEach(btn => {
+  const input = btn.previousElementSibling;
+  const img = btn.querySelector('img');
+
+  // Original and toggled icon paths
+  const originalIcon = 'assets/icons/eye.svg';
+  const toggledIcon = 'assets/icons/eye%282%29.svg'; // parentheses encoded
+
+  btn.addEventListener('click', () => {
+    if (input.type === 'password') {
+      input.type = 'text';
+      img.src = toggledIcon;
+    } else {
+      input.type = 'password';
+      img.src = originalIcon;
+    }
+  });
 });
