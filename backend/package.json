@@ -1,5 +1,5 @@
 {
-  "name": "quiz-ai-app",
+  "name": "braniac",
   "version": "1.0.0",
   "description": "A full-featured Quiz AI App with Gemini API integration and multiplayer support",
   "main": "index.js",
