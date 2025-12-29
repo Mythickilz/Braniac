@@ -27,7 +27,8 @@ services:
 
   - type: static
     name: braniac-frontend
-    region: oregon
+    type: web
+    runtime: static
     branch: main
     plan: free
     buildCommand: echo "No build required"
