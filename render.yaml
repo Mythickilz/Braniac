@@ -1,7 +1,7 @@
 services:
   - type: web
     name: braniac-backend-main
-    env: node
+    runtime: node
     region: oregon
     branch: main
     plan: free
@@ -14,7 +14,7 @@ services:
 
   - type: web
     name: braniac-backend-master
-    env: node
+    runtime: node
     region: oregon
     branch: master
     plan: free
