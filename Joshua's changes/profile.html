@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile | BRANIAC</title>
+    <link rel="stylesheet" href="profile.css">
+</head>
+<body class="auth-none">
+    <div class="profile-page-container">
+        <main class="profile-card">
+            <header class="profile-header">
+                <h1 class="auth-title">EDIT YOUR PROFILE</h1>
+            </header>
+
+            <div class="edit-pfp-section">
+                <div class="pfp-wrapper">
+                    <img src="assets/icons/profile.svg" id="currentPfp" class="profile-icon" alt="Profile">
+                    <button class="pfp-edit-badge" id="openUploadBtn">
+                        <img src="assets/icons/upload.svg" alt="Edit">
+                    </button>
+                </div>
+            </div>
+
+            <form id="editProfileForm" class="auth-form">
+                <div class="input-group">
+                    <label>First Name</label>
+                    <input type="text" id="editFirstName" placeholder="Enter your first name" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Bio</label>
+                    <textarea id="editBio" maxlength="140" placeholder="Tell us about yourself..."></textarea>
+                    <span id="charCount">0/140</span>
+                </div>
+
+                <div class="profile-button-group">
+                    <button type="button" class="guest-btn" onclick="location.href='index.html'">CANCEL</button>
+                    <button type="submit" class="auth-btn">SAVE CHANGES</button>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <div id="uploadOverlay" class="auth-overlay">
+        <div class="upload-choices-container">
+            <button type="button" id="closeUploadChoices" style="position: absolute; top: 14px; right: 14px; background: none; border: none; cursor: pointer; font-size: 20px;">✕</button>
+            <button type="button" id="chooseFileBtn" class="choice-item">
+                <img src="assets/icons/folder.svg" alt=""> FROM FILES
+            </button>
+            <button type="button" id="takePhotoBtn" class="choice-item">
+                <img src="assets/icons/camera.svg" alt=""> USE CAMERA
+            </button>
+        </div>
+    </div>
+
+    <input type="file" id="pfpInput" accept="image/*" hidden>
+
+    <script src="profile.js"></script>
+</body>
+</html>
