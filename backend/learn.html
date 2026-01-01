@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz AI - Learn & Compete</title>
+    <link rel="stylesheet" href="learn.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧠 QUIZ AI</h1>
+            <p>Learn Smarter. Compete Harder.</p>
+        </header>
+
+        <!-- Home Section -->
+        <div id="home" class="section active">
+            <h2 style="margin-bottom: 20px;">Choose Your Mode</h2>
+            <div class="mode-selector">
+                <button class="mode-btn active" onclick="switchMode('topic')">📚 Topic Quiz</button>
+                <button class="mode-btn" onclick="switchMode('document')">📄 Document Quiz</button>
+            </div>
+
+            <!-- Topic Quiz Form -->
+            <div id="topic-form">
+                <div class="form-group">
+                    <label for="topic">Topic</label>
+                    <input type="text" id="topic" placeholder="e.g., Photosynthesis, JavaScript, World War II" required>
+                </div>
+                <div class="form-group">
+                    <label for="topicQuestions">Number of Questions</label>
+                    <input type="number" id="topicQuestions" value="5" min="1" max="50" required>
+                </div>
+                <div class="form-group">
+                    <label for="topicDifficulty">Difficulty</label>
+                    <select id="topicDifficulty" required>
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate" selected>Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                        <option value="expert">Expert</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="generateTopicQuiz()">Generate Quiz</button>
+                <button class="btn" onclick="showMultiplayer()">Or Play Multiplayer</button>
+            </div>
+
+            <!-- Document Quiz Form -->
+            <div id="document-form" style="display: none;">
+                <div class="form-group">
+                    <label for="document">Upload Document (TXT or PDF)</label>
+                    <input type="file" id="document" accept=".txt,.pdf" required>
+                </div>
+                <div class="form-group">
+                    <label for="docQuestions">Number of Questions</label>
+                    <input type="number" id="docQuestions" value="5" min="1" max="50" required>
+                </div>
+                <div class="form-group">
+                    <label for="docDifficulty">Difficulty</label>
+                    <select id="docDifficulty" required>
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate" selected>Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                        <option value="expert">Expert</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="generateDocumentQuiz()">Generate Quiz</button>
+                <button class="btn" onclick="showMultiplayer()">Or Play Multiplayer</button>
+            </div>
+
+            <div id="message" style="margin-top: 20px;"></div>
+        </div>
+
+        <!-- Multiplayer Section -->
+        <div id="multiplayer" class="section">
+            <h2 style="margin-bottom: 20px;">🎮 Multiplayer Mode</h2>
+            <div id="multiplayer-content"></div>
+        </div>
+
+        <!-- Quiz Section -->
+        <div id="quiz" class="section">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div id="timerDisplay" class="timer" style="display: none;"></div>
+            <div id="quizContent"></div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" class="section">
+            <h2 style="margin-bottom: 30px;">📊 Your Results</h2>
+            <div id="resultsContent"></div>
+            <button class="btn" onclick="goHome()" style="margin-top: 30px;">Back to Home</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="learn.js"></script>
+</body>
+</html>

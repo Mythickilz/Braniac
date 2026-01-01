@@ -125,26 +125,26 @@ document.addEventListener('DOMContentLoaded', function() {
     // -----------------------------
     const registerForm = document.getElementById('registerForm');
     const registerError = document.getElementById('registerError');
-    const regUsername = document.getElementById('regUsername');
-    const regFirstName = document.getElementById('regFirstName');
-    const regPassword = document.getElementById('regPassword');
-    const regConfirmPassword = document.getElementById('regConfirmPassword');
+    const registerUsername = document.getElementById('registerUsername');
+    const registerFirstName = document.getElementById('registerFirstName');
+    const registerPassword = document.getElementById('registerPassword');
+    const registerConfirm = document.getElementById('registerConfirm');
 
     function clearRegisterError() {
       if (registerError) {
         registerError.style.display = 'none';
         registerError.textContent = '';
       }
-      if (regUsername) regUsername.classList.remove('error');
-      if (regFirstName) regFirstName.classList.remove('error');
-      if (regPassword) regPassword.classList.remove('error');
-      if (regConfirmPassword) regConfirmPassword.classList.remove('error');
+      if (registerUsername) registerUsername.classList.remove('error');
+      if (registerFirstName) registerFirstName.classList.remove('error');
+      if (registerPassword) registerPassword.classList.remove('error');
+      if (registerConfirm) registerConfirm.classList.remove('error');
     }
 
-    if (regUsername) regUsername.addEventListener('input', clearRegisterError);
-    if (regFirstName) regFirstName.addEventListener('input', clearRegisterError);
-    if (regPassword) regPassword.addEventListener('input', clearRegisterError);
-    if (regConfirmPassword) regConfirmPassword.addEventListener('input', clearRegisterError);
+    if (registerUsername) registerUsername.addEventListener('input', clearRegisterError);
+    if (registerFirstName) registerFirstName.addEventListener('input', clearRegisterError);
+    if (registerPassword) registerPassword.addEventListener('input', clearRegisterError);
+    if (registerConfirm) registerConfirm.addEventListener('input', clearRegisterError);
 
     if (registerForm) {
       registerForm.addEventListener('submit', async (e) => {
@@ -157,10 +157,10 @@ document.addEventListener('DOMContentLoaded', function() {
           return;
         }
 
-        const username = regUsername ? regUsername.value.trim() : '';
-        const firstName = regFirstName ? regFirstName.value.trim() : '';
-        const password = regPassword ? regPassword.value : '';
-        const confirmPassword = regConfirmPassword ? regConfirmPassword.value : '';
+        const username = registerUsername ? registerUsername.value.trim() : '';
+        const firstName = registerFirstName ? registerFirstName.value.trim() : '';
+        const password = registerPassword ? registerPassword.value : '';
+        const confirmPassword = registerConfirm ? registerConfirm.value : '';
 
         // Client-side validation to match server rules
         const usernameOk = /^[A-Za-z0-9_-]{3,30}$/.test(username);
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
             registerError.textContent = 'Invalid username. Use letters, numbers, hyphens or underscores (3-30 chars), no spaces.';
             registerError.style.display = 'block';
           }
-          if (regUsername) regUsername.classList.add('error');
+          if (registerUsername) registerUsername.classList.add('error');
           return;
         }
         if (!firstNameOk) {
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
             registerError.textContent = 'Invalid first name. Use letters, spaces, and hyphens only.';
             registerError.style.display = 'block';
           }
-          if (regFirstName) regFirstName.classList.add('error');
+          if (registerFirstName) registerFirstName.classList.add('error');
           return;
         }
         if (!passwordOk) {
@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
             registerError.textContent = 'Invalid password. Minimum 8 characters, no spaces.';
             registerError.style.display = 'block';
           }
-          if (regPassword) regPassword.classList.add('error');
+          if (registerPassword) registerPassword.classList.add('error');
           return;
         }
         if (password !== confirmPassword) {
@@ -196,12 +196,20 @@ document.addEventListener('DOMContentLoaded', function() {
             registerError.textContent = 'Passwords do not match';
             registerError.style.display = 'block';
           }
-          if (regPassword) regPassword.classList.add('error');
-          if (regConfirmPassword) regConfirmPassword.classList.add('error');
+          if (registerPassword) registerPassword.classList.add('error');
+          if (registerConfirm) registerConfirm.classList.add('error');
           return;
         }
 
         try {
+          if (!AUTH_CONNECTED) {
+            // Mock successful registration when disconnected
+            localStorage.setItem('braniacFirstName', firstName);
+            clearRegisterError();
+            authOverlay.classList.remove('active');
+            checkSession();
+            return;
+          }
           const resp = await fetch('http://localhost:3001/api/auth/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -218,10 +226,11 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
           }
 
-          // Save first name locally and redirect to onboarding
+          // Save first name locally and close modal
           if (data.user && data.user.firstName) localStorage.setItem('braniacFirstName', data.user.firstName);
           clearRegisterError();
-          window.location.href = 'onboarding.html';
+          authOverlay.classList.remove('active');
+          checkSession(); // Update UI to show logged-in state
         } catch (err) {
           console.error('Register error:', err);
           if (registerError) {
@@ -329,4 +338,70 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       });
     });
+
+    // -----------------------------
+    // SESSION CHECK & LOGOUT
+    // -----------------------------
+    // Toggle this to `false` to disconnect frontend from backend auth (temporary)
+    const AUTH_CONNECTED = false;
+    const userGreeting = document.getElementById('userGreeting');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    async function checkSession() {
+      if (!AUTH_CONNECTED) {
+        // Auth disconnected: show logged-out state
+        if (userGreeting) userGreeting.style.display = 'none';
+        if (signInBtn) signInBtn.style.display = 'inline-block';
+        if (logoutBtn) logoutBtn.style.display = 'none';
+        return;
+      }
+      try {
+        const resp = await fetch('http://localhost:3001/api/auth/me', {
+          credentials: 'include'
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data.user) {
+            // User is logged in
+            if (userGreeting) {
+              userGreeting.textContent = `Hi, ${data.user.firstName || data.user.username}`;
+              userGreeting.style.display = 'inline';
+            }
+            if (signInBtn) signInBtn.style.display = 'none';
+            if (logoutBtn) logoutBtn.style.display = 'inline-block';
+          }
+        } else {
+          // Not logged in
+          if (userGreeting) userGreeting.style.display = 'none';
+          if (signInBtn) signInBtn.style.display = 'inline-block';
+          if (logoutBtn) logoutBtn.style.display = 'none';
+        }
+      } catch (err) {
+        console.error('Session check error:', err);
+      }
+    }
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        if (!AUTH_CONNECTED) {
+          localStorage.removeItem('braniacFirstName');
+          checkSession();
+          return;
+        }
+        try {
+          await fetch('http://localhost:3001/api/auth/logout', {
+            method: 'POST',
+            credentials: 'include'
+          });
+          localStorage.removeItem('braniacFirstName');
+          checkSession();
+        } catch (err) {
+          console.error('Logout error:', err);
+        }
+      });
+    }
+
+    // Check session on page load
+    checkSession();
 });

@@ -442,6 +442,9 @@ const DB_NAME = process.env.DB_NAME || 'braniac_db';
 let db;
 let usersCollection;
 let sessionsCollection;
+// In-memory fallback stores when MongoDB is not available
+const inMemoryUsers = new Map(); // username -> user object
+const inMemorySessions = new Map(); // token -> { token, username, createdAt }
 
 // Connect to MongoDB
 async function connectDB() {
@@ -460,7 +463,7 @@ async function connectDB() {
         console.log('✅ Connected to MongoDB successfully');
     } catch (err) {
         console.error('❌ MongoDB connection error:', err);
-        console.log('⚠️  Running without database - auth will not persist');
+        console.log('⚠️  Running without database - using in-memory fallback (auth will not persist across restarts)');
     }
 }
 
@@ -496,34 +499,62 @@ function createSessionToken(username) {
 }
 
 async function saveSession(token, username) {
-    if (!sessionsCollection) return;
+    if (sessionsCollection) {
+        try {
+            await sessionsCollection.insertOne({
+                token,
+                username,
+                createdAt: new Date()
+            });
+            return;
+        } catch (err) {
+            console.error('Error saving session to DB:', err);
+        }
+    }
+    // Fallback to in-memory
     try {
-        await sessionsCollection.insertOne({
-            token,
-            username,
-            createdAt: new Date()
-        });
+        inMemorySessions.set(token, { token, username, createdAt: new Date() });
     } catch (err) {
-        console.error('Error saving session:', err);
+        console.error('Error saving session in-memory:', err);
     }
 }
 
 async function getSession(token) {
-    if (!sessionsCollection) return null;
+    if (sessionsCollection) {
+        try {
+            return await sessionsCollection.findOne({ token });
+        } catch (err) {
+            console.error('Error getting session from DB:', err);
+        }
+    }
+    // Fallback to in-memory
     try {
-        return await sessionsCollection.findOne({ token });
+        const s = inMemorySessions.get(token) || null;
+        if (s) {
+            console.log('Retrieved in-memory session for', s.username);
+        } else {
+            console.log('No in-memory session for token', token && token.slice ? token.slice(0,8) : token);
+        }
+        return s;
     } catch (err) {
-        console.error('Error getting session:', err);
+        console.error('Error getting session in-memory:', err);
         return null;
     }
 }
 
 async function deleteSession(token) {
-    if (!sessionsCollection) return;
+    if (sessionsCollection) {
+        try {
+            await sessionsCollection.deleteOne({ token });
+        } catch (err) {
+            console.error('Error deleting session from DB:', err);
+        }
+    }
+    // Fallback to in-memory
     try {
-        await sessionsCollection.deleteOne({ token });
+        inMemorySessions.delete(token);
     } catch (err) {
-        console.error('Error deleting session:', err);
+        console.error('Error deleting in-memory session:', err);
     }
 }
 
@@ -553,13 +584,16 @@ app.post('/api/auth/register', async (req, res) => {
         }
 
         const normalized = username.toLowerCase();
-        
-        // Check if user exists in database
+
+        // Check if user exists in DB or in-memory
+        let existingUser = null;
         if (usersCollection) {
-            const existingUser = await usersCollection.findOne({ username: normalized });
-            if (existingUser) {
-                return res.status(409).json({ error: 'Username already taken' });
-            }
+            existingUser = await usersCollection.findOne({ username: normalized });
+        } else if (inMemoryUsers.has(normalized)) {
+            existingUser = inMemoryUsers.get(normalized);
+        }
+        if (existingUser) {
+            return res.status(409).json({ error: 'Username already taken' });
         }
 
         const salt = crypto.randomBytes(16).toString('hex');
@@ -572,10 +606,17 @@ app.post('/api/auth/register', async (req, res) => {
             salt, 
             createdAt: new Date() 
         };
-        
-        // Save user to database
+
+        // Save user to DB or in-memory
         if (usersCollection) {
-            await usersCollection.insertOne(user);
+            try {
+                await usersCollection.insertOne(user);
+            } catch (err) {
+                console.error('Error inserting user to DB:', err);
+                return res.status(500).json({ error: 'Server error' });
+            }
+        } else {
+            inMemoryUsers.set(normalized, user);
         }
 
         const token = createSessionToken(normalized);
@@ -601,13 +642,15 @@ app.post('/api/auth/login', async (req, res) => {
         }
 
         const normalized = username.toLowerCase();
-        
-        // Find user in database
+
+        // Find user in DB or in-memory
         let user = null;
         if (usersCollection) {
             user = await usersCollection.findOne({ username: normalized });
+        } else if (inMemoryUsers.has(normalized)) {
+            user = inMemoryUsers.get(normalized);
         }
-        
+
         if (!user) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
@@ -631,7 +674,11 @@ app.post('/api/auth/login', async (req, res) => {
 // Simple middleware to get current user from session cookie or header
 async function getUserFromRequest(req) {
     const token = req.cookies && req.cookies.session || req.headers['authorization'] && req.headers['authorization'].replace('Bearer ', '');
-    if (!token) return null;
+    if (!token) {
+        console.log('No session token found on request');
+        return null;
+    }
+    console.log('getUserFromRequest token startsWith:', token && token.slice ? token.slice(0,8) : token);
     
     const session = await getSession(token);
     if (!session) return null;
@@ -639,6 +686,13 @@ async function getUserFromRequest(req) {
     if (usersCollection) {
         const user = await usersCollection.findOne({ username: session.username });
         return user || null;
+    }
+    // Fallback to in-memory users
+    try {
+        const memUser = inMemoryUsers.get(session.username) || null;
+        if (memUser) return memUser;
+    } catch (err) {
+        console.error('Error reading in-memory user:', err);
     }
     return null;
 }
