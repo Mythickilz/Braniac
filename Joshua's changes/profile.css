@@ -79,6 +79,7 @@ body {
   border-radius: 50%;
   object-fit: cover;
   background: #0F0F0F;
+  display: block;
 }
 
 /* Upload badge — solid, no gradient */
@@ -96,6 +97,7 @@ body {
   justify-content: center;
   cursor: pointer;
   transition: transform 0.2s ease;
+  z-index: 3; /* Sits above the circle */
 }
 
 .pfp-edit-badge img {
