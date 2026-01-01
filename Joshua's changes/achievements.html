@@ -18,8 +18,9 @@
     }
   })();
 </script>
-  <link rel="stylesheet" href="global.css">
+  <link rel="stylesheet" href="global.css" />
   <link rel="stylesheet" href="achievements.css" />
+  <link rel="stylesheet" href="zoom.css" />
   <link href="https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@200;300;400;500;600;700&family=Orbitron:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.ico" />
   <!-- Standard favicons -->
@@ -682,6 +683,31 @@
   </p>
 </div> </div> </div> <script src="nav-session.js" defer></script>
 <script src="achievements.js"></script>
+
+<div id="authNotice" class="auth-notice">
+  Please sign in, register, or continue as guest to proceed.
+</div>
+
+<div id="guestNoticeOverlay" class="modal-overlay hidden">
+  <div class="notice-card">
+    
+    <h1 class="auth-title">WARNING</h1>
+    <p class="notice-text">
+      Guest data will be cleared after you sign out or close the tab
+    </p>
+
+    <div class="notice-actions">
+      <button id="cancelGuest" class="rtn-btn">RETURN</button>
+      <button id="confirmGuest" class="prcd-btn">PROCEED</button>
+    </div>
+
+    <label class="checkbox-container">
+      <input type="checkbox" id="dontShowGuestNotice">
+      <span class="checkmark"></span>
+      <span class="label-text">Don't show me this warning again</span>
+    </label>
+  </div>
+</div>
 
 </body>
 </html>
