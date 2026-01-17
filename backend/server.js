@@ -12,7 +12,7 @@ require('dotenv').config();
 
 // Gemini API key should be provided via environment variable for security.
 // Set the environment variable GEMINI_API_KEY in production (do NOT commit keys).
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'YOUR_GEMINI_API_KEY_HERE';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AIzaSyANt9WI56zqzUfP3M0p2gsLMkUfbFbUeWw';
 
 const app = express();
 const server = http.createServer(app);
@@ -437,7 +437,7 @@ const crypto = require('crypto');
 const { MongoClient } = require('mongodb');
 
 // MongoDB connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://braniaclearning:Braniac@google_2025@braniac.uleylmt.mongodb.net/?appName=Braniac';
 const DB_NAME = process.env.DB_NAME || 'braniac_db';
 let db;
 let usersCollection;
@@ -474,7 +474,7 @@ async function connectDB() {
 // Start DB connection
 connectDB();
 
-const SESSION_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
+const SESSION_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('your-secure-random-secret');
 
 function validateUsername(username) {
     // Allow letters, numbers, hyphens and underscores, no spaces
@@ -973,9 +973,9 @@ app.post('/api/user/profile', async (req, res) => {
     }
 });
 
-// Favicon route
+// Favicon route - return 204 No Content (no favicon for API server)
 app.get('/favicon.ico', (req, res) => {
-    res.sendFile(path.join(__dirname, 'favicon.ico'));
+    res.status(204).end();
 });
 
 // Serve the main HTML file
