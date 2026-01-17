@@ -6,7 +6,8 @@
   <meta name="description" content="BRANIAC - Learn anything, outsmart everyone. AI-crafted quizzes for smarter learning." />
   <title>BRANIAC LEARNING</title>
   <link rel="stylesheet" href="onboarding.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Cascadia+Code&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="lock.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@200;300;400;500;600;700&family=Orbitron:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.ico" />
   <!-- Standard favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16x16.png">
@@ -34,7 +35,7 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="BRANIAC — High Energy. Zero Boredom. All Brain.">
 <meta property="og:description" content="Outsmart everyone with BRANIAC — the high-energy learning platform built for the next generation.">
-<meta property="og:image" content="https://braniaclearning.netlify.app/images/og-image.png">
+<meta property="og:image" content="https://i.postimg.cc/9MnmpY9g/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 
@@ -44,7 +45,7 @@
 <meta property="twitter:url" content="https://braniaclearning.netlify.app/">
 <meta name="twitter:title" content="BRANIAC — High Energy. Zero Boredom. All Brain.">
 <meta name="twitter:description" content="Outsmart everyone with BRANIAC — the high-energy learning platform built for the next generation.">
-<meta name="twitter:image" content="https://braniaclearning.netlify.app/images/og-image.png">
+<meta name="twitter:image" content="https://i.postimg.cc/9MnmpY9g/og-image.png">
 </head>
 <body>
 
@@ -119,14 +120,37 @@
     class="profile-icon"
   />
 </div>
+
+<p id="uploadError" class="error-msg hidden">YOUR IMAGE IS TOO LARGE</p>
+
       <div class="profile-buttons">
+        <input type="file" id="pfpInput" accept="image/*" style="display: none;">
+
         <button class="profile-btn upload-btn">UPLOAD</button>
+        
+<div id="uploadOverlay" class="auth-overlay hidden">
+  <div class="upload-choices-container">
+
+    <button type="button" id="chooseFileBtn" class="choice-item">
+      <img src="assets/icons/folder.svg" alt=""> FROM FILES
+    </button>
+
+    <button type="button" id="takePhotoBtn" class="choice-item">
+      <img src="assets/icons/camera.svg" alt=""> USE CAMERA
+    </button>
+
+  </div>
+</div>
+
         <button class="profile-btn skip-btn">LATER</button>
       </div>
+      <p class="file-limit">Max image size: 2MB (JPG, PNG)</p>
     </div>
   </div>
 </section>
 
+<script src="nav-session.js" defer></script>
 <script src="onboarding.js"></script>
+<script src="lock.js"></script>
 </body>
 </html>

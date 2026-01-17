@@ -16,15 +16,19 @@ let quizData = {
 };
 
 function switchMode(mode) {
-    document.getElementById('topic-form').style.display = mode === 'topic' ? 'block' : 'none';
-    document.getElementById('document-form').style.display = mode === 'document' ? 'block' : 'none';
+    // Change 'block' to 'flex' so it respects your centering CSS
+    document.getElementById('topic-form').style.display = mode === 'topic' ? 'flex' : 'none';
+    document.getElementById('document-form').style.display = mode === 'document' ? 'flex' : 'none';
     
     document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+    // Use event.currentTarget to ensure the correct element is targeted
+    event.currentTarget.classList.add('active');
 }
 
 function showMessage(text, type = 'error') {
     const msgDiv = document.getElementById('message');
+    // Added text-align: center to the style attribute
+    msgDiv.style.textAlign = 'center'; 
     msgDiv.innerHTML = `<div class="${type}">${text}</div>`;
     setTimeout(() => msgDiv.innerHTML = '', 5000);
 }
@@ -39,7 +43,7 @@ async function generateTopicQuiz() {
         return;
     }
 
-    showLoading('Generating your quiz...');
+    showLoading('Creating your quiz...');
 
     try {
         const response = await fetch('http://localhost:3001/api/generate-quiz/topic', {
@@ -54,7 +58,7 @@ async function generateTopicQuiz() {
             })
         });
 
-        if (!response.ok) throw new Error('Failed to generate quiz');
+        if (!response.ok) throw new Error('Failed to create quiz');
         
         const data = await response.json();
         quizData.questions = data.questions;
@@ -65,7 +69,7 @@ async function generateTopicQuiz() {
         
         startQuiz();
     } catch (error) {
-        showMessage('Error generating quiz: ' + error.message);
+        showMessage('Error creating quiz: ' + error.message);
     }
 }
 
@@ -80,7 +84,7 @@ async function generateDocumentQuiz() {
         return;
     }
 
-    showLoading('Processing document and generating quiz...');
+    showLoading('Processing document and creating quiz...');
 
     try {
         const formData = new FormData();
@@ -122,7 +126,7 @@ function displayQuestion() {
 
     let html = `
         <div class="question">
-            <div style="color: #FE77AA; margin-bottom: 10px;">Question ${quizData.currentQuestion + 1} of ${quizData.questions.length}</div>
+            <div style="color: #EE247C; margin-bottom: 10px;">Question ${quizData.currentQuestion + 1} of ${quizData.questions.length}</div>
             <div class="question-text">${question.question}</div>
             <div class="options">
     `;
@@ -135,7 +139,7 @@ function displayQuestion() {
         `;
     }
 
-    html += `</div></div><button class="btn" onclick="nextQuestion()">Next</button>`;
+    html += `</div></div><button class="btn" onclick="nextQuestion()">NEXT</button>`;
     document.getElementById('quizContent').innerHTML = html;
 }
 
@@ -170,7 +174,7 @@ function finishQuiz() {
 
     let resultsHTML = `
         <div style="text-align: center; margin-bottom: 30px;">
-            <div style="font-size: 3em; color: #FE77AA; margin-bottom: 10px;">${percentage}%</div>
+            <div style="font-size: 3em; color: #EE247C; margin-bottom: 10px;">${percentage}%</div>
             <div style="font-size: 1.5em;">You got ${quizData.score} out of ${quizData.questions.length} correct</div>
         </div>
     `;
@@ -187,12 +191,12 @@ function showMultiplayer() {
     quizData.mode = 'multiplayer';
 
     let html = `
-        <div style="margin-bottom: 20px;">
-            <button class="btn" onclick="createRoom()">Create Room</button>
-            <button class="btn" onclick="showJoinForm()">Join Room</button>
+        <div style="display: flex; flex-direction: row; justify-content: center; gap: 20px; margin-bottom: 20px; width: 100%;">
+            <button class="btn multi-btn" onclick="createRoom()">CREATE ROOM</button>
+            <button class="btn multi-btn" onclick="showJoinForm()">JOIN ROOM</button>
         </div>
-        <div id="multiplayer-form"></div>
-        <div id="room-display"></div>
+        <div id="multiplayer-form" style="display: flex; flex-direction: column; align-items: center;"></div>
+        <div id="room-display" style="display: flex; flex-direction: column; align-items: center;"></div>
     `;
 
     document.getElementById('multiplayer-content').innerHTML = html;
@@ -235,7 +239,7 @@ function showMultiplayer() {
 }
 
 function createRoom() {
-    const topic = prompt('Enter a topic for the quiz:');
+    const topic = prompt('Enter a subject for the quiz:');
     if (!topic) return;
 
     const questionCount = prompt('Number of questions:', '5');
@@ -264,7 +268,7 @@ function showJoinForm() {
     const pin = prompt('Enter room PIN:');
     if (!pin) return;
 
-    const name = prompt('Enter your name:');
+    const name = prompt('Enter your first name:');
     if (!name) return;
 
     quizData.multiplayer.socket.emit('joinRoom', { pin, name });
@@ -272,13 +276,15 @@ function showJoinForm() {
 
 function displayRoom() {
     const html = `
-        <div class="room-info">
-            <div><strong>Room PIN:</strong> <span style="color: #FE77AA; font-size: 1.3em;">${quizData.multiplayer.pin}</span></div>
+        <div class="room-info" style="display: flex; flex-direction: column; align-items: center;">
+            <div><strong>ROOM PIN:</strong> <span style="color: #EE247C; font-size: 1.3em;">${quizData.multiplayer.pin}</span></div>
             <div style="margin-top: 10px;">Share this PIN with others to join</div>
+            
+            ${quizData.multiplayer.isHost ? '<button class="btn" onclick="startMultiplayerQuiz()" style="margin-top: 20px;">START QUIZ</button>' : ''}
         </div>
+        
         <h3 style="margin: 20px 0;">Players (${quizData.multiplayer.players.length})</h3>
         <div id="players-list"></div>
-        ${quizData.multiplayer.isHost ? '<button class="btn" onclick="startMultiplayerQuiz()">Start Quiz</button>' : ''}
     `;
     document.getElementById('room-display').innerHTML = html;
     updatePlayersList();
@@ -290,7 +296,7 @@ function updatePlayersList() {
         html += `
             <div class="player">
                 <span>${player.name}${player.isHost ? ' 👑' : ''}</span>
-                <span style="color: #FE77AA;">Ready</span>
+                <span style="color: #EE247C;">Ready</span>
             </div>
         `;
     });
