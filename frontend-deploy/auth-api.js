@@ -1,7 +1,9 @@
 // Authentication API Client for Braniac
 // This module handles all authentication and user data operations with the backend
 
-const API_BASE_URL = 'http://localhost:3001'; // Update for production
+const API_BASE_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:3001' 
+    : 'https://backend-braniac.vercel.app'; // Production backend
 
 class AuthAPI {
     constructor() {
